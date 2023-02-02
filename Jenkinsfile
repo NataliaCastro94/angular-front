@@ -14,5 +14,13 @@ pipeline{
         }
       }
     }
+
+    stage('SonarQube analysis') {
+      steps {
+        withSonarQubeEnv(credentialsId: "sonarqube-credentials", installationName: "sonarqube-server"){
+          sh 'npm run sonar'
+        }
+      }
+    }
   }
 }
