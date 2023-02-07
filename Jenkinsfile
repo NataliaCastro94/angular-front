@@ -7,7 +7,7 @@ pipeline{
 
   environment{
     registryCredential = 'docker-hub-credentials'
-    registryFrontend = 'nataliacastro94/frontend-demo'
+    registryFrontend = 'nataliacastro/frontend-demo'
     sonarqubeCredentials = 'sonarqube-credentials'
     sonarqubeServer = 'sonarqube-server'
   }
