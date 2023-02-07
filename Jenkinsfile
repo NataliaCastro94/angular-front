@@ -5,6 +5,13 @@ pipeline{
     }
   }
 
+  environment{
+    registryCredential = 'docker-hub-credentials'
+    registryFrontend = 'nataliacastro94/frontend-demo'
+    sonarqubeCredentials = 'sonarqube-credentials'
+    sonarqubeServer = 'sonarqube-server'
+  }
+
   stages {
     stage('NPM build') {
       steps {
@@ -17,7 +24,7 @@ pipeline{
 
     stage('SonarQube analysis') {
       steps {
-        withSonarQubeEnv(credentialsId: "sonarqube-credentials", installationName: "sonarqube-server"){
+        withSonarQubeEnv(credentialsId: sonarqubeCredentials, installationName: sonarqubeServer){
           sh 'npm run sonar'
         }
       }
@@ -34,5 +41,21 @@ pipeline{
             }
           }
         }
+    stage('Push Image latest to Docker Hub') {
+      steps {
+        script {
+          dockerImage = docker.build registryFrontend + ":latest"
+          docker.withRegistry( '', registryCredential) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+  }
+  post{
+    always{
+      sh 'docker logout'
+      sh "docker rmi -f " + registryFrontend + ":latest"
+    }
   }
 }
